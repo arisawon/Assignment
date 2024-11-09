@@ -1,0 +1,40 @@
+﻿@model List<Transaction>
+
+@{
+    ViewData["Title"] = "All Transactions";
+}
+
+
+@if(Model != null && Model.Count > 0)
+{
+    <div class="text-center">
+        <h1 class="display-4">All Transactions</h1>
+
+        <table class="table" style="margin-top:150px;">
+            <thead>
+                <tr>
+                    <th scope="col">Transaction Id</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">From A/C</th>
+                    <th scope="col">To A/C</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var tran in Model)
+                {
+                    <tr>
+                        <th scope="row">@tran.TransactionId</th>
+                        <td>@tran.TransactionDate</td>
+                        <td>@tran.FromAccount</td>
+                        <td>@tran.ToAccount</td>
+                        <td>@tran.Amount</td>
+                        <td>@tran.TransactionDescription</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+}

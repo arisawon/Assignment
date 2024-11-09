@@ -1,0 +1,207 @@
+﻿USE [Assesment]
+GO
+
+/****** Object:  Table [dbo].[Accounts]    Script Date: 08-11-2024 17:56:06 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Accounts](
+	[AccountId] [int] IDENTITY(1,1) NOT NULL,
+	[AccountNumber] [varchar](12) NOT NULL,
+	[AccountHolderName] [varchar](50) NOT NULL,
+	[Balance] [decimal](18, 2) NOT NULL,
+ CONSTRAINT [PK_Accounts] PRIMARY KEY CLUSTERED 
+(
+	[AccountId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [IX_Accounts] UNIQUE NONCLUSTERED 
+(
+	[AccountNumber] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Accounts] ADD  CONSTRAINT [DF_Accounts_Balance]  DEFAULT ((0)) FOR [Balance]
+GO
+
+/****** ******************************************************************************************************************** ******/
+
+USE [Assesment]
+GO
+
+/****** Object:  Table [dbo].[Transactions]    Script Date: 08-11-2024 17:57:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Transactions](
+	[TransactionId] [bigint] IDENTITY(1,1) NOT NULL,
+	[TransactionDate] [datetime] NOT NULL,
+	[FromAccount] [varchar](12) NOT NULL,
+	[ToAccount] [varchar](12) NOT NULL,
+	[Amount] [decimal](18, 2) NOT NULL,
+	[TransactionDescription] [varchar](15) NULL,
+ CONSTRAINT [PK_Transactions] PRIMARY KEY CLUSTERED 
+(
+	[TransactionId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** ******************************************************************************************************************** ******/
+
+
+USE [Assesment]
+GO
+/****** Object:  StoredProcedure [dbo].[AccountsInsert]    Script Date: 08-11-2024 18:38:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[AccountsInsert] 
+	-- Add the parameters for the stored procedure here
+	 @AccountNumber AS varchar(12) = null
+	,@NewId BIGINT OUTPUT
+    ,@AccountHolderName AS varchar(50) = null
+    ,@Balance AS Decimal(18,2) = 0.00
+    
+AS
+--start
+BEGIN
+	BEGIN TRY
+		BEGIN TRANSACTION;
+        
+		--insert
+		BEGIN
+			INSERT INTO Accounts
+					(AccountNumber
+					,AccountHolderName
+					,Balance
+					)
+				VALUES
+					(@AccountNumber
+					,@AccountHolderName
+					,@Balance)
+		END
+		--insert
+
+        COMMIT TRANSACTION; 
+	END TRY 
+	BEGIN CATCH
+
+		--transaction is uncommittable.  
+        IF (XACT_STATE()) = -1  
+        BEGIN  
+            ROLLBACK TRANSACTION;  
+			SET @NewId = -1;
+        END;  
+        
+        --transaction is committable.  
+        IF (XACT_STATE()) = 1  
+        BEGIN  
+            COMMIT TRANSACTION; 
+			 SET @NewId = SCOPE_IDENTITY();
+        END; 
+
+	END CATCH
+	--end catch
+	
+END
+--end
+
+/****** ******************************************************************************************************************** ******/
+
+USE [Assesment]
+GO
+/****** Object:  StoredProcedure [dbo].[TransactionInsert]    Script Date: 08-11-2024 18:39:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROCEDURE [dbo].[TransactionInsert] 
+	-- Add the parameters for the stored procedure here
+	 @FromAccount AS varchar(12) = null
+    ,@ToAccount AS varchar(12) = null
+	,@TransactionDate AS DateTime = null
+    ,@Amount AS decimal(18,2) = 0
+    ,@TransactionDescription AS Varchar(15) = null
+    
+AS
+--start
+BEGIN
+	DECLARE @BalanceToAccount DECIMAL(18,2);
+	DECLARE @NewBalanceToAccount DECIMAL(18,2);
+	DECLARE @BalanceFromAccount DECIMAL(18,2);
+	DECLARE @NewBalanceFromAccount DECIMAL(18,2);
+
+	IF @TransactionDate is NULL
+		SET @TransactionDate = GETDATE();
+
+	BEGIN TRY
+		BEGIN TRANSACTION;
+        
+		--insert
+		BEGIN
+			INSERT INTO [Transactions]
+					([FromAccount]
+					,[ToAccount]
+					,[TransactionDate]
+					,[Amount]
+					,[TransactionDescription])
+				VALUES
+					(@FromAccount
+					,@ToAccount
+					,@TransactionDate
+					,@Amount
+					,@TransactionDescription
+					)
+
+			--History Insert
+			
+			SELECT @BalanceFromAccount = Balance FROM Accounts WHERE AccountId = @FromAccount;
+
+			SET @NewBalanceFromAccount = @BalanceFromAccount - @Amount;
+
+			SELECT @BalanceToAccount = Balance FROM Accounts WHERE AccountId = @ToAccount;
+
+			SET @NewBalanceToAccount = @BalanceToAccount + @Amount;
+
+			UPDATE Accounts 
+			SET Balance = @NewBalanceFromAccount
+			WHERE AccountNumber like @FromAccount;
+
+			UPDATE Accounts
+			SET Balance = @NewBalanceToAccount
+			WHERE AccountNumber like @ToAccount;
+
+		END
+		--insert
+
+        COMMIT TRANSACTION; 
+	END TRY 
+	BEGIN CATCH
+
+		--transaction is uncommittable.  
+        IF (XACT_STATE()) = -1  
+        BEGIN  
+            ROLLBACK TRANSACTION;  
+        END;  
+        
+        --transaction is committable.  
+        IF (XACT_STATE()) = 1  
+        BEGIN  
+            COMMIT TRANSACTION;     
+        END; 
+
+	END CATCH
+	--end catch
+	
+END
+--end
+
+/****** ******************************************************************************************************************** ******/

@@ -1,0 +1,153 @@
+﻿@model TransactionWithoutDate
+
+@{
+    ViewData["Title"] = "Transaction";
+}
+
+<style>
+    
+
+
+
+.card {
+    max-width: 500px;
+    margin: auto;
+    color: black;
+    border-radius: 20 px;
+}
+
+p {
+    margin: 0px;
+}
+
+.container .h8 {
+    font-size: 30px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.btn.btn-primary {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    background-image: linear-gradient(to right, #77A1D3 0%, #79CBCA 51%, #77A1D3 100%);
+    border: none;
+    transition: 0.5s;
+    background-size: 200% auto;
+
+}
+
+
+.btn.btn.btn-primary:hover {
+    background-position: right center;
+    color: #fff;
+    text-decoration: none;
+}
+
+
+
+.btn.btn-primary:hover .fas.fa-arrow-right {
+    transform: translate(15px);
+    transition: transform 0.2s ease-in;
+}
+
+.form-control {
+    color: white;
+    background-color: #223C60;
+    border: 2px solid transparent;
+    height: 60px;
+    padding-left: 20px;
+    vertical-align: middle;
+}
+
+.form-control:focus {
+    color: white;
+    background-color: #0C4160;
+    border: 2px solid #2d4dda;
+    box-shadow: none;
+}
+
+.text {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+::placeholder {
+    font-size: 14px;
+    font-weight: 600;
+}
+</style>
+
+<div>
+
+
+    <div class="text-center">
+        <h1 class="display-4">Money Transfer</h1>
+    </div>
+
+
+    <div class="card px-4" style="margin-top:100px;">
+        <p class="h8 py-3">Transfer Details</p>
+        <div class="row gx-3">
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Your Name</p>
+                    <input id="txtFromAccountName" class="form-control mb-3" type="text" placeholder="Your Name" >
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Your Account Number</p>
+                    <input id="txtFromAccount" class="form-control mb-3" type="number" placeholder="1234567835678">
+                </div>
+            </div>
+            <div class="col-12">
+                <p id="lblFromAccountStatus" style="text-align:center;font-weight:bold;">Not a valid account</p>
+                
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Customer Name</p>
+                    <input id="txtToAccountName" class="form-control mb-3" type="text" placeholder="Customer Name">
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Customer Account Number</p>
+                    <input id="txtToAccount" class="form-control mb-3" type="number" placeholder="12345678435678">
+                </div>
+            </div>
+            <div class="col-12">
+                <p id="lblToAccountStatus" style="text-align:center;font-weight:bold;">
+                    Valid account
+                </p>
+                
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Amount</p>
+                    <input id="txtAmount" class="form-control mb-3" type="number" placeholder="2300.78">
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Remarks</p>
+                    <input id="txtRemarks" class="form-control mb-3" type="text" placeholder="Remarks">
+                </div>
+            </div>
+            <div class="col-12">
+                <div id="btnSubmit" tabindex="0" class="btn btn-primary mb-3">
+                    <span class="ps-3 btn-text">Pay $243</span>
+                    <span class="fas fa-arrow-right"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/transaction.js"></script>
+}

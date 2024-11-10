@@ -1,3 +1,4 @@
+using Assignment.CustomMiddleware;
 using Assignment.Helper;
 using Assignment.Repositories.Implements.MSSql;
 using Assignment.Repositories.Interfaces;
@@ -33,6 +34,7 @@ builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ITransactionService, TransactionService>();
 
 builder.Services.AddTransient<ValidateHelper>();
+builder.Services.AddTransient<InputSanitizationService>();
 
 var encryptionKey = builder.Configuration["EncryptionSettings:EncryptionKey"];
 builder.Services.AddSingleton(new EncryptionService(encryptionKey));
@@ -59,6 +61,8 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+app.UseMiddleware<ContentSecurityPolicyMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

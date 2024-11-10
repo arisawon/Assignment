@@ -11,15 +11,26 @@ namespace Assignment.Services.Implements
         private readonly ITransactionsRepo _transaction;
         private readonly IAccountsRepo _account;
         private readonly EncryptionService _encrypt;
+        private readonly InputSanitizationService _sanitizer;
 
-        public TransactionService(ITransactionsRepo transaction, IAccountsRepo account, EncryptionService encrypt)
+        public TransactionService(ITransactionsRepo transaction, IAccountsRepo account, EncryptionService encrypt, InputSanitizationService sanitizer)
         {
             _transaction = transaction;
             _account = account;
             _encrypt = encrypt;
+            _sanitizer = sanitizer;
+
         }
         public bool AddTransaction(TransactionWithoutDate transaction)
         {
+            if (!string.IsNullOrWhiteSpace(transaction.TransactionDescription))
+                transaction.TransactionDescription = _sanitizer.Sanitize(transaction.TransactionDescription);
+            transaction.ToAccountHolderName = _sanitizer.Sanitize(transaction.ToAccountHolderName);
+            transaction.ToAccount = _sanitizer.Sanitize(transaction.ToAccount);
+            transaction.FromAccount = _sanitizer.Sanitize(transaction.FromAccount);
+            transaction.FromAccountHolderName = _sanitizer.Sanitize(transaction.FromAccountHolderName);
+
+
             var fromAccount = _account.GetAccount(_encrypt.EncryptData(transaction.FromAccount), transaction.FromAccountHolderName);
             var toAccount = _account.GetAccount(_encrypt.EncryptData(transaction.ToAccount), transaction.ToAccountHolderName);
 

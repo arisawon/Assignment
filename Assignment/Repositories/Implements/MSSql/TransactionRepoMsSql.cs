@@ -62,7 +62,7 @@ namespace Assignment.Repositories.Implements.MSSql
                     Value = transaction.TransactionDescription
                 };
 
-                if (transaction != null && !string.IsNullOrWhiteSpace(transaction.TransactionDescription) && !string.IsNullOrWhiteSpace(transaction.ToAccount) && !string.IsNullOrWhiteSpace(transaction.FromAccount))
+                if (transaction != null && !string.IsNullOrWhiteSpace(transaction.ToAccount) && !string.IsNullOrWhiteSpace(transaction.FromAccount))
                 {
                     FormattableString sql = $"EXEC TransactionInsert @FromAccount = {fromAccount}, @ToAccount = {toAccount}, @Amount = {amount}, @TransactionDescription = {desc}, @NewId = {newIdParam} OUTPUT";
                     _database.Database.ExecuteSqlInterpolated(sql);

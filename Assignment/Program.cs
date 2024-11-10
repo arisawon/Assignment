@@ -1,3 +1,4 @@
+using Assignment.Helper;
 using Assignment.Repositories.Implements.MSSql;
 using Assignment.Repositories.Interfaces;
 using Assignment.Services.Implements;
@@ -30,6 +31,9 @@ builder.Services.AddScoped<ITransactionsRepo, TransactionRepoMsSql>();
 
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ITransactionService, TransactionService>();
+
+builder.Services.AddTransient<ValidateHelper>();
+
 
 
 

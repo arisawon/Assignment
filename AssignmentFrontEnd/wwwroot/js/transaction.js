@@ -237,7 +237,7 @@ $(document).ready(function () {
                 success: function (response) {
                     // Handle successful response
                     $('#trans-form')[0].reset();
-                    frmValidationError.css("display", "block");
+                    frmValidationError.hide();
                     Swal.fire({
                         position: "center",
                         icon: "success",
@@ -245,6 +245,7 @@ $(document).ready(function () {
                         showConfirmButton: false,
                         timer: 1500
                     });
+                    $("html, body").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (xhr, status, error) {
                     // Handle error response

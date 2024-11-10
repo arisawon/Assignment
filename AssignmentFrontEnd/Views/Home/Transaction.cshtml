@@ -120,7 +120,7 @@ p {
                 <div class="col-12">
                     <div class="d-flex flex-column">
                         <p class="text mb-1">Customer Account Number</p>
-                        <input id="txtToAccount" class="form-control mb-3" type="text" max="12" maxlength="12" required placeholder="12345678435678">
+                        <input id="txtToAccount" class="form-control mb-3" type="text" maxlength="12" required placeholder="12345678435678">
                     </div>
                 </div>
                 <div class="col-12">
@@ -132,7 +132,7 @@ p {
                 <div class="col-12">
                     <div class="d-flex flex-column">
                         <p class="text mb-1">Amount</p>
-                        <input id="txtAmount" class="form-control mb-3" type="number" required placeholder="2300.78" value="0">
+                        <input id="txtAmount" step="any" class="form-control mb-3" type="number" required placeholder="2300.78" value="0">
                     </div>
                 </div>
                 <div class="col-12">
@@ -142,10 +142,6 @@ p {
                     </div>
                 </div>
                 <div class="col-12">
-                    @* <div id="btnSubmit" onclick="document.forms['tranc-form'].submit();" tabindex="0" class="btn btn-primary mb-3">
-                    <span class="ps-3 btn-text">Pay $243</span>
-                    <span class="fas fa-arrow-right"></span>
-                    </div> *@
                     <button class="btn btn-primary" type="submit" id="btnSubmit">Initiate Payment</button>
                 </div>
             </div>

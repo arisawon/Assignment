@@ -88,11 +88,6 @@ $(document).ready(function () {
         else
             SetStatus('To', false);
     });
-    //btnSubmit.click(function () {
-    //    let valid = ValidateForm();
-    //    if (valid)
-    //        SubmitTransaction();
-    //});
 
     $("#trans-form").submit(function (event) {
 
@@ -202,13 +197,6 @@ $(document).ready(function () {
 
         let amountPayable = 0; 
         let rem = '';
-
-        //if (txtToName.val() != null && txtToName.val() != '' && txtToAccount.val() != null && txtToAccount.val() != '') {
-        //    VarifyAccount(txtToName.val(), txtToAccount.val(), 'To');
-        //}
-        //if (txtFromName.val() != null && txtFromName.val() != '' && txtFromAccount.val() != null && txtFromAccount.val() != '') {
-        //    VarifyAccount(txtFromName.val(), txtFromAccount.val(), 'From');
-        //}
 
         if (txtAmount.val() != null && txtAmount.val() != '')
             amountPayable = parseFloat(txtAmount.val());

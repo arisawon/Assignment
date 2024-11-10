@@ -91,61 +91,70 @@ p {
 
     <div class="card px-4" style="margin-top:100px;">
         <p class="h8 py-3">Transfer Details</p>
-        <div class="row gx-3">
-            <div class="col-12">
-                <div class="d-flex flex-column">
-                    <p class="text mb-1">Your Name</p>
-                    <input id="txtFromAccountName" class="form-control mb-3" type="text" placeholder="Your Name" >
+        <div class="col-12" id="frmValidationError" style="display:block;">
+            <p id="lblFormValidationError" style="text-align:center;font-weight:bold;color:red">Not a valid account</p>
+        </div>
+        <form name="trans-form" id="trans-form" style="padding:10px;">
+            <div class="row gx-3">
+                <div class="col-12">
+                    <div class="d-flex flex-column">
+                        <p class="text mb-1">Your Name</p>
+                        <input id="txtFromAccountName" class="form-control mb-3" required type="text" placeholder="Your Name">
+                    </div>
                 </div>
-            </div>
-            <div class="col-12">
-                <div class="d-flex flex-column">
-                    <p class="text mb-1">Your Account Number</p>
-                    <input id="txtFromAccount" class="form-control mb-3" type="number" placeholder="1234567835678">
+                <div class="col-12">
+                    <div class="d-flex flex-column">
+                        <p class="text mb-1">Your Account Number</p>
+                        <input id="txtFromAccount" class="form-control mb-3" type="text" maxlength="12" required placeholder="1234567835678">
+                    </div>
                 </div>
-            </div>
-            <div class="col-12">
-                <p id="lblFromAccountStatus" style="text-align:center;font-weight:bold;">Not a valid account</p>
-                
-            </div>
-            <div class="col-12">
-                <div class="d-flex flex-column">
-                    <p class="text mb-1">Customer Name</p>
-                    <input id="txtToAccountName" class="form-control mb-3" type="text" placeholder="Customer Name">
+                <div class="col-12">
+                    <p id="lblFromAccountStatus" style="text-align:center;font-weight:bold;">Not a valid account</p>
                 </div>
-            </div>
-            <div class="col-12">
-                <div class="d-flex flex-column">
-                    <p class="text mb-1">Customer Account Number</p>
-                    <input id="txtToAccount" class="form-control mb-3" type="number" placeholder="12345678435678">
+                <div class="col-12">
+                    <div class="d-flex flex-column">
+                        <p class="text mb-1">Customer Name</p>
+                        <input id="txtToAccountName" class="form-control mb-3" type="text" required placeholder="Customer Name">
+                    </div>
                 </div>
-            </div>
-            <div class="col-12">
-                <p id="lblToAccountStatus" style="text-align:center;font-weight:bold;">
-                    Valid account
-                </p>
-                
-            </div>
-            <div class="col-12">
-                <div class="d-flex flex-column">
-                    <p class="text mb-1">Amount</p>
-                    <input id="txtAmount" class="form-control mb-3" type="number" placeholder="2300.78">
+                <div class="col-12">
+                    <div class="d-flex flex-column">
+                        <p class="text mb-1">Customer Account Number</p>
+                        <input id="txtToAccount" class="form-control mb-3" type="text" max="12" maxlength="12" required placeholder="12345678435678">
+                    </div>
                 </div>
-            </div>
-            <div class="col-12">
-                <div class="d-flex flex-column">
-                    <p class="text mb-1">Remarks</p>
-                    <input id="txtRemarks" class="form-control mb-3" type="text" placeholder="Remarks">
+                <div class="col-12">
+                    <p id="lblToAccountStatus" style="text-align:center;font-weight:bold;">
+                        Valid account
+                    </p>
+
                 </div>
-            </div>
-            <div class="col-12">
-                <div id="btnSubmit" tabindex="0" class="btn btn-primary mb-3">
+                <div class="col-12">
+                    <div class="d-flex flex-column">
+                        <p class="text mb-1">Amount</p>
+                        <input id="txtAmount" class="form-control mb-3" type="number" required placeholder="2300.78" value="0">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="d-flex flex-column">
+                        <p class="text mb-1">Remarks</p>
+                        <input id="txtRemarks" class="form-control mb-3" type="text" placeholder="Remarks">
+                    </div>
+                </div>
+                <div class="col-12">
+                    @* <div id="btnSubmit" onclick="document.forms['tranc-form'].submit();" tabindex="0" class="btn btn-primary mb-3">
                     <span class="ps-3 btn-text">Pay $243</span>
                     <span class="fas fa-arrow-right"></span>
+                    </div> *@
+                    <button class="btn btn-primary" type="submit" id="btnSubmit">Initiate Payment</button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
+    
+        
+    
+    
 </div>
 
 @section scripts {

@@ -35,10 +35,10 @@ public partial class DbAa587cAssesmentContext : DbContext
             entity.HasIndex(e => e.AccountNumber, "IX_Accounts").IsUnique();
 
             entity.Property(e => e.AccountHolderName)
-                .HasMaxLength(50)
+                .HasMaxLength(250)
                 .IsUnicode(false);
             entity.Property(e => e.AccountNumber)
-                .HasMaxLength(12)
+                .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.Balance).HasColumnType("decimal(18, 2)");
         });
@@ -50,11 +50,11 @@ public partial class DbAa587cAssesmentContext : DbContext
                 .HasMaxLength(12)
                 .IsUnicode(false);
             entity.Property(e => e.ToAccount)
-                .HasMaxLength(12)
+                .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.TransactionDate).HasColumnType("datetime");
             entity.Property(e => e.TransactionDescription)
-                .HasMaxLength(15)
+                .HasMaxLength(150)
                 .IsUnicode(false);
         });
 

@@ -14,12 +14,14 @@ namespace Assignment.Controllers
     {
 
         private readonly ITransactionService _service;
+        private readonly Helper.ValidateHelper _validate;
         private readonly ILogger<AccountsController> _logger;
 
-        public TransactionsController(ITransactionService service, ILogger<AccountsController> logger)
+        public TransactionsController(ITransactionService service, Helper.ValidateHelper validate, ILogger<AccountsController> logger)
         {
             _service = service;
             _logger = logger;
+            _validate = validate;
         }
 
         [HttpGet("get-all-tracsactions")]
@@ -42,8 +44,17 @@ namespace Assignment.Controllers
         {
             try
             {
-                var result = _service.AddTransaction(transaction);
-                return result ? Ok(result) : BadRequest("Error in Transaction data saving process!");
+                
+                if (_validate.validateAccountBalance(transaction))
+                {
+                    var result = _service.AddTransaction(transaction);
+                    return result ? Ok(result) : BadRequest("Error in Transaction data saving process!");
+                }
+                else
+                {
+                    _logger.LogInformation("Balance low!!",transaction);
+                    return BadRequest("Balance is low to allow the transaction!");
+                }
             }
             catch (Exception ex)
             {
@@ -51,5 +62,6 @@ namespace Assignment.Controllers
                 return BadRequest("Error in Transaction data saving process!");
             }
         }
+
     }
 }

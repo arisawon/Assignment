@@ -6,18 +6,20 @@ $(document).ready(function () {
     var varifiedToAccount = false;
 
 
-    var btnText = $(".btn-text");
-    var btnSubmit = $("#btnSubmit");
-    var txtAmount = $("#txtAmount");
-    var txtFromAccount = $("#txtFromAccount");
-    var txtFromName = $("#txtFromAccountName");
-    var txtToAccount = $("#txtToAccount");
-    var txtToName = $("#txtToAccountName");
-    var txtRem = $("#txtRemarks");
-    var lblToAccountStatus = $("#lblToAccountStatus");
-    var lblFromAccountStatus = $("#lblFromAccountStatus");
+    const btnText = $(".btn-text");
+    const btnSubmit = $("#btnSubmit");
+    const txtAmount = $("#txtAmount");
+    const txtFromAccount = $("#txtFromAccount");
+    const txtFromName = $("#txtFromAccountName");
+    const txtToAccount = $("#txtToAccount");
+    const txtToName = $("#txtToAccountName");
+    const txtRem = $("#txtRemarks");
+    const lblToAccountStatus = $("#lblToAccountStatus");
+    const lblFromAccountStatus = $("#lblFromAccountStatus");
+    const frmValidationError = $('#frmValidationError');
 
-    txtAmount.val('0');
+    frmValidationError.hide();
+
     btnText.text('Initiate Payment');
 
     if (varifiedToAccount) {
@@ -42,52 +44,62 @@ $(document).ready(function () {
     $("#txtAmount").on("input", function () {
         let amt = $(this).val();
         if (amt != null && amt != '') {
-            btnText.text('Initiate Payment of $' + amt);
+            btnSubmit.text('Initiate Payment of $' + amt);
         }
         else
-            btnText.text('Initiate Payment');
+            btnSubmit.text('Initiate Payment');
         
     });
 
     txtFromAccount.blur(function () {
 
-        if (txtFromName.val() != null && txtFromName.val() != '' && txtFromAccount.val() != null && txtFromAccount.val() != '') {
+        if (ValidateFromDetails()) {
             VarifyAccount(txtFromName.val(), txtFromAccount.val(),'From');
         }
         else
-            setStatus('From', false);
+            SetStatus('From', false);
     });
 
     txtFromName.blur(function () {
 
-        if (txtFromName.val() != null && txtFromName.val() != '' && txtFromAccount.val() != null && txtFromAccount.val() != '') {
+        if (ValidateFromDetails()) {
             VarifyAccount(txtFromName.val(), txtFromAccount.val(), 'From');
         }
         else
-            setStatus('From', false);
+            SetStatus('From', false);
     });
 
     
 
     txtToAccount.blur(function () {
 
-        if (txtToName.val() != null && txtToName.val() != '' && txtToAccount.val() != null && txtToAccount.val() != '') {
+        if (ValidateToDetails()) {
             VarifyAccount(txtToName.val(), txtToAccount.val(),'To');
         }
         else
-            setStatus('To', false);
+            SetStatus('To', false);
     });
 
     txtToName.blur(function () {
 
-        if (txtToName.val() != null && txtToName.val() != '' && txtToAccount.val() != null && txtToAccount.val() != '') {
+        if (ValidateToDetails()) {
             VarifyAccount(txtToName.val(), txtToAccount.val(), 'To');
         }
         else
-            setStatus('To', false);
+            SetStatus('To', false);
     });
-    btnSubmit.click(function () {
-        SubmitTransaction();
+    //btnSubmit.click(function () {
+    //    let valid = ValidateForm();
+    //    if (valid)
+    //        SubmitTransaction();
+    //});
+
+    $("#trans-form").submit(function (event) {
+
+        event.preventDefault();
+        let valid = ValidateForm();
+        if (valid)
+            SubmitTransaction();
     });
 
     function VarifyAccount(accountName, accountNo, accountType) {
@@ -97,15 +109,93 @@ $(document).ready(function () {
             type: 'GET', // HTTP method (GET, POST, PUT, DELETE, etc.)
             success: function (response) {
                 // Code to execute if the request is successful
-                setStatus(accountType,response);
+                SetStatus(accountType,response);
             },
             error: function (xhr, status, error) {
                 // Code to execute if the request fails
-                setStatus(accountType, false);
+                SetStatus(accountType, false);
                 console.error("Error:", error);
                 
             }
         });
+    }
+
+    function ValidateFromDetails() {
+        const lettersOnlyRegex = /^[A-Za-z\s]+$/;
+        const noRegex = /^\d{12}$/;
+        let isValid = true;
+        const strFromAccount = txtFromAccount.val();
+        const strFromName = txtFromName.val();
+
+        $('.from-error').remove();
+
+        if (!noRegex.test(strFromAccount)) {
+            $("<label class='error-message from-error' style='color: red;'>Bank account number must be exactly 12 digits</label>")
+                .insertAfter("#txtFromAccount");
+            isValid = false;
+        }
+
+        if (!lettersOnlyRegex.test(strFromName)) {
+            $("<label class='error-message from-error' style='color: red;'>Name field should have only charecter</label>")
+                .insertAfter("#txtFromAccountName");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function ValidateAmount() {
+        const amountRegex = /^\d+(\.\d{1,2})?$/;
+        let isValid = true;
+
+        if (txtAmount.val() == null && txtAmount.val() == '')
+            return false;
+
+        const amt = txtAmount.val();
+
+        $('.amt-error').remove();
+
+        if (!amountRegex.test(amt) || (parseFloat(amt) <=0 )) {
+            $("<label class='error-message amt-error' style='color: red;'>Invalid amount format. Only two decimal places are allowed and it must be greater than zero.</label>")
+                .insertAfter("#txtAmount");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function ValidateToDetails() {
+
+        const lettersOnlyRegex = /^[A-Za-z\s]+$/;
+        const noRegex = /^\d{12}$/;
+        let isValid = true;
+        const strToAccount = txtToAccount.val();
+        const strToName = txtToName.val();
+
+        $('.to-error').remove();
+
+        if (!noRegex.test(strToAccount)) {
+            $("<label class='error-message to-error' style='color: red;'>Bank account number must be exactly 12 digits</label>")
+                .insertAfter("#txtToAccount");
+            isValid = false;
+        }
+
+        if (!lettersOnlyRegex.test(strToName)) {
+            $("<label class='error-message to-error' style='color: red;'>Name field should have only charecter</label>")
+                .insertAfter("#txtToAccountName");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function ValidateForm() {
+
+        if (ValidateFromDetails() && ValidateToDetails() && ValidateAmount())
+            return true;
+        else
+            return false;
     }
 
     function SubmitTransaction() {
@@ -113,12 +203,12 @@ $(document).ready(function () {
         let amountPayable = 0; 
         let rem = '';
 
-        if (txtToName.val() != null && txtToName.val() != '' && txtToAccount.val() != null && txtToAccount.val() != '') {
-            VarifyAccount(txtToName.val(), txtToAccount.val(), 'To');
-        }
-        if (txtFromName.val() != null && txtFromName.val() != '' && txtFromAccount.val() != null && txtFromAccount.val() != '') {
-            VarifyAccount(txtFromName.val(), txtFromAccount.val(), 'From');
-        }
+        //if (txtToName.val() != null && txtToName.val() != '' && txtToAccount.val() != null && txtToAccount.val() != '') {
+        //    VarifyAccount(txtToName.val(), txtToAccount.val(), 'To');
+        //}
+        //if (txtFromName.val() != null && txtFromName.val() != '' && txtFromAccount.val() != null && txtFromAccount.val() != '') {
+        //    VarifyAccount(txtFromName.val(), txtFromAccount.val(), 'From');
+        //}
 
         if (txtAmount.val() != null && txtAmount.val() != '')
             amountPayable = parseFloat(txtAmount.val());
@@ -130,6 +220,7 @@ $(document).ready(function () {
 
 
         if (varifiedFromAccount && varifiedToAccount && amountPayable > 0) {
+            
             $.ajax({
                 url: 'https://localhost:7242/api/Transactions/add-transaction', // Example API endpoint
                 type: 'POST', // Use POST method
@@ -145,18 +236,28 @@ $(document).ready(function () {
                 }),
                 success: function (response) {
                     // Handle successful response
-                    console.log("Post created successfully:", response);
+                    $('#trans-form')[0].reset();
+                    frmValidationError.css("display", "block");
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Your transaction saved successfully!!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 },
                 error: function (xhr, status, error) {
                     // Handle error response
-                    console.error("Error creating post:", error);
+                    frmValidationError.show();
+                    $("#frmValidationError p").text("Error : " + xhr.responseText); 
+                    $("html, body").animate({ scrollTop: 0 }, "slow");
                 }
             });
         }
         
     }
 
-    function setStatus (accountType, response) {
+    function SetStatus (accountType, response) {
         if (accountType == 'To') {
             if (response) {
                 varifiedToAccount = true;

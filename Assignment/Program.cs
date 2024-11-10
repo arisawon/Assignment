@@ -34,6 +34,9 @@ builder.Services.AddTransient<ITransactionService, TransactionService>();
 
 builder.Services.AddTransient<ValidateHelper>();
 
+var encryptionKey = builder.Configuration["EncryptionSettings:EncryptionKey"];
+builder.Services.AddSingleton(new EncryptionService(encryptionKey));
+
 
 
 

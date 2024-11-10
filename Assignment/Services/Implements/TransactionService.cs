@@ -1,4 +1,5 @@
 ﻿using Assignment.DBO.Tables;
+using Assignment.Helper;
 using Assignment.Models;
 using Assignment.Repositories.Interfaces;
 
@@ -9,23 +10,25 @@ namespace Assignment.Services.Implements
 
         private readonly ITransactionsRepo _transaction;
         private readonly IAccountsRepo _account;
+        private readonly EncryptionService _encrypt;
 
-        public TransactionService(ITransactionsRepo transaction, IAccountsRepo account)
+        public TransactionService(ITransactionsRepo transaction, IAccountsRepo account, EncryptionService encrypt)
         {
             _transaction = transaction;
             _account = account;
+            _encrypt = encrypt;
         }
         public bool AddTransaction(TransactionWithoutDate transaction)
         {
-            var fromAccount = _account.GetAccount(transaction.FromAccount, transaction.FromAccountHolderName);
-            var toAccount = _account.GetAccount(transaction.ToAccount, transaction.ToAccountHolderName);
+            var fromAccount = _account.GetAccount(_encrypt.EncryptData(transaction.FromAccount), transaction.FromAccountHolderName);
+            var toAccount = _account.GetAccount(_encrypt.EncryptData(transaction.ToAccount), transaction.ToAccountHolderName);
 
             if(fromAccount != null && toAccount != null) //validate both the account with number and name
             {
                 Transaction transactionWithDate = new Transaction();
                 transactionWithDate.TransactionId = transaction.TransactionId;
-                transactionWithDate.FromAccount = transaction.FromAccount;
-                transactionWithDate.ToAccount = transaction.ToAccount;
+                transactionWithDate.FromAccount = _encrypt.EncryptData(transaction.FromAccount);
+                transactionWithDate.ToAccount = _encrypt.EncryptData(transaction.ToAccount);
                 transactionWithDate.Amount = transaction.Amount;
                 transactionWithDate.TransactionDate = DateTime.Now;
                 transactionWithDate.TransactionDescription = transaction.TransactionDescription;
@@ -39,7 +42,13 @@ namespace Assignment.Services.Implements
 
         public List<Transaction> GetAllTransactions()
         {
-            return _transaction.GetAllTransactions();
+            var result = _transaction.GetAllTransactions();
+            foreach(var transaction in result)
+            {
+                transaction.FromAccount = _encrypt.DecryptData(transaction.FromAccount);
+                transaction.ToAccount = _encrypt.DecryptData(transaction.ToAccount);
+            }
+            return result;
         }
     }
 }

@@ -246,6 +246,7 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     $("html, body").animate({ scrollTop: 0 }, "slow");
+                    txtFromAccountName.focus();
                 },
                 error: function (xhr, status, error) {
                     // Handle error response

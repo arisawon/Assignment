@@ -1,7 +1,7 @@
-﻿USE [Assesment]
+﻿USE [db_aa587c_assesment]
 GO
 
-/****** Object:  Table [dbo].[Accounts]    Script Date: 08-11-2024 17:56:06 ******/
+/****** Object:  Table [dbo].[Accounts]    Script Date: 11-11-2024 14:32:39 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -10,14 +10,14 @@ GO
 
 CREATE TABLE [dbo].[Accounts](
 	[AccountId] [int] IDENTITY(1,1) NOT NULL,
-	[AccountNumber] [varchar](12) NOT NULL,
-	[AccountHolderName] [varchar](50) NOT NULL,
+	[AccountNumber] [varchar](200) NOT NULL,
+	[AccountHolderName] [varchar](250) NOT NULL,
 	[Balance] [decimal](18, 2) NOT NULL,
  CONSTRAINT [PK_Accounts] PRIMARY KEY CLUSTERED 
 (
 	[AccountId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [IX_Accounts] UNIQUE NONCLUSTERED 
+ CONSTRAINT [IX_Accounts_1] UNIQUE NONCLUSTERED 
 (
 	[AccountNumber] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -27,12 +27,13 @@ GO
 ALTER TABLE [dbo].[Accounts] ADD  CONSTRAINT [DF_Accounts_Balance]  DEFAULT ((0)) FOR [Balance]
 GO
 
-/****** ******************************************************************************************************************** ******/
 
-USE [Assesment]
+/****** ******************************************************************************************************* ******/
+
+USE [db_aa587c_assesment]
 GO
 
-/****** Object:  Table [dbo].[Transactions]    Script Date: 08-11-2024 17:57:24 ******/
+/****** Object:  Table [dbo].[Transactions]    Script Date: 11-11-2024 14:33:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -42,10 +43,10 @@ GO
 CREATE TABLE [dbo].[Transactions](
 	[TransactionId] [bigint] IDENTITY(1,1) NOT NULL,
 	[TransactionDate] [datetime] NOT NULL,
-	[FromAccount] [varchar](12) NOT NULL,
-	[ToAccount] [varchar](12) NOT NULL,
+	[FromAccount] [varchar](200) NOT NULL,
+	[ToAccount] [varchar](200) NOT NULL,
 	[Amount] [decimal](18, 2) NOT NULL,
-	[TransactionDescription] [varchar](15) NULL,
+	[TransactionDescription] [varchar](150) NULL,
  CONSTRAINT [PK_Transactions] PRIMARY KEY CLUSTERED 
 (
 	[TransactionId] ASC
@@ -53,21 +54,25 @@ CREATE TABLE [dbo].[Transactions](
 ) ON [PRIMARY]
 GO
 
-/****** ******************************************************************************************************************** ******/
+
+/****** ******************************************************************************************************* ******/
 
 
-USE [Assesment]
+USE [db_aa587c_assesment]
 GO
-/****** Object:  StoredProcedure [dbo].[AccountsInsert]    Script Date: 08-11-2024 18:38:15 ******/
+
+/****** Object:  StoredProcedure [dbo].[AccountsInsert]    Script Date: 11-11-2024 14:34:18 ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[AccountsInsert] 
+
+CREATE   PROCEDURE [dbo].[AccountsInsert] 
 	-- Add the parameters for the stored procedure here
-	 @AccountNumber AS varchar(12) = null
+	 @AccountNumber AS varchar(200) = null
 	,@NewId BIGINT OUTPUT
-    ,@AccountHolderName AS varchar(50) = null
+    ,@AccountHolderName AS varchar(250) = null
     ,@Balance AS Decimal(18,2) = 0.00
     
 AS
@@ -78,7 +83,7 @@ BEGIN
         
 		--insert
 		BEGIN
-			INSERT INTO Accounts
+			INSERT INTO [dbo].Accounts
 					(AccountNumber
 					,AccountHolderName
 					,Balance
@@ -91,17 +96,18 @@ BEGIN
 		--insert
 
         COMMIT TRANSACTION; 
+		SET @NewId = SCOPE_IDENTITY();
 	END TRY 
 	BEGIN CATCH
 
-		--transaction is uncommittable.  
+	--	--transaction is uncommittable.  
         IF (XACT_STATE()) = -1  
         BEGIN  
             ROLLBACK TRANSACTION;  
 			SET @NewId = -1;
         END;  
         
-        --transaction is committable.  
+ --       --transaction is committable.  
         IF (XACT_STATE()) = 1  
         BEGIN  
             COMMIT TRANSACTION; 
@@ -113,23 +119,29 @@ BEGIN
 	
 END
 --end
-
-/****** ******************************************************************************************************************** ******/
-
-USE [Assesment]
 GO
-/****** Object:  StoredProcedure [dbo].[TransactionInsert]    Script Date: 08-11-2024 18:39:00 ******/
+
+
+/***************************************************************************************************************************/
+
+USE [db_aa587c_assesment]
+GO
+
+/****** Object:  StoredProcedure [dbo].[TransactionInsert]    Script Date: 11-11-2024 14:35:04 ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 CREATE   PROCEDURE [dbo].[TransactionInsert] 
 	-- Add the parameters for the stored procedure here
-	 @FromAccount AS varchar(12) = null
-    ,@ToAccount AS varchar(12) = null
+	 @FromAccount AS varchar(200) = null
+    ,@ToAccount AS varchar(200) = null
 	,@TransactionDate AS DateTime = null
     ,@Amount AS decimal(18,2) = 0
-    ,@TransactionDescription AS Varchar(15) = null
+    ,@TransactionDescription AS Varchar(150) = null
+	,@NewId BIGINT OUTPUT
     
 AS
 --start
@@ -161,14 +173,14 @@ BEGIN
 					,@TransactionDescription
 					)
 
-			--History Insert
 			
-			SELECT @BalanceFromAccount = Balance FROM Accounts WHERE AccountId = @FromAccount;
-
+			SELECT @BalanceFromAccount = Balance FROM Accounts WHERE AccountNumber = @FromAccount;
+			--Print '@BalanceFromAccount : ' + CAST(@BalanceFromAccount AS Varchar(100));
+			
 			SET @NewBalanceFromAccount = @BalanceFromAccount - @Amount;
-
-			SELECT @BalanceToAccount = Balance FROM Accounts WHERE AccountId = @ToAccount;
-
+			--Print '@NewBalanceFromAccount : ' + CAST(@NewBalanceFromAccount AS Varchar(100));
+			SELECT @BalanceToAccount = Balance FROM Accounts WHERE AccountNumber = @ToAccount;
+			--Print @BalanceToAccount;
 			SET @NewBalanceToAccount = @BalanceToAccount + @Amount;
 
 			UPDATE Accounts 
@@ -181,27 +193,36 @@ BEGIN
 
 		END
 		--insert
-
+		
         COMMIT TRANSACTION; 
+		SET @NewId = SCOPE_IDENTITY();
+		
 	END TRY 
 	BEGIN CATCH
 
-		--transaction is uncommittable.  
+	--	--transaction is uncommittable.  
         IF (XACT_STATE()) = -1  
         BEGIN  
-            ROLLBACK TRANSACTION;  
+            ROLLBACK TRANSACTION; 
+			SET @NewId = -1;
         END;  
         
-        --transaction is committable.  
+ --       --transaction is committable.  
         IF (XACT_STATE()) = 1  
         BEGIN  
-            COMMIT TRANSACTION;     
+            COMMIT TRANSACTION; 
+			SET @NewId = SCOPE_IDENTITY();
         END; 
 
 	END CATCH
-	--end catch
+	----end catch
 	
 END
 --end
 
 /****** ******************************************************************************************************************** ******/
+GO
+
+
+/*************************************************************************************************************************/
+

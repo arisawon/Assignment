@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace AssignmentFrontEnd.Models;
 
+/// <summary>
+/// This is a model class used for amount transfer process, 
+/// this structure will not be used for data save. 
+/// It is a kind of ViewModel.
+/// </summary>
 public partial class TransactionWithoutDate
 {
     public long TransactionId { get; set; }

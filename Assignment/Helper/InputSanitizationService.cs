@@ -1,13 +1,18 @@
-﻿
-
-using Ganss.Xss;
+﻿using Ganss.Xss;
 
 namespace Assignment.Helper
 {
+    /// <summary>
+    /// This helper class for applying the HTML Sanitizer
+    /// we can also customise the code as per our requirement.
+    /// </summary>
     public class InputSanitizationService
     {
         private readonly HtmlSanitizer _sanitizer;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public InputSanitizationService()
         {
             _sanitizer = new HtmlSanitizer();
@@ -18,6 +23,12 @@ namespace Assignment.Helper
             _sanitizer.AllowedAttributes.Add("class");
         }
 
+
+        /// <summary>
+        /// For applying the sanitization
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public string Sanitize(string input)
         {
             return _sanitizer.Sanitize(input);

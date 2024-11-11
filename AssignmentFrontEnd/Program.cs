@@ -3,6 +3,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+//register the HTTPClient service which will
+//be used to call Web API from controller if required.
 builder.Services.AddHttpClient();
 
 var app = builder.Build();

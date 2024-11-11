@@ -7,6 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Assignment.Repositories.Implements.MSSql
 {
+
+    /// <summary>
+    /// This is the class in the data layer to do the 
+    /// database operations using LINQ and DBContext.
+    /// Tjis class in implemented from the interface 
+    /// named ITransactionsRepo. This will be used in service 
+    /// class by dependency injection. 
+    /// </summary>
     public class TransactionRepoMsSql : ITransactionsRepo
     {
 
@@ -18,10 +26,18 @@ namespace Assignment.Repositories.Implements.MSSql
             _database = database;
             _logger = logger;
         }
+
+        /// <summary>
+        /// This method is for add a new record for 
+        /// transaction using database Stored Procedure.
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <returns>Bool</returns>
         public bool AddTransaction(Transaction transaction)
         {
             try
             {
+                //Parameters for SP
                 var newIdParam = new SqlParameter
                 {
                     ParameterName = "@NewId",
@@ -62,6 +78,7 @@ namespace Assignment.Repositories.Implements.MSSql
                     Value = transaction.TransactionDescription
                 };
 
+                //Execution logic for SP
                 if (transaction != null && !string.IsNullOrWhiteSpace(transaction.ToAccount) && !string.IsNullOrWhiteSpace(transaction.FromAccount))
                 {
                     FormattableString sql = $"EXEC TransactionInsert @FromAccount = {fromAccount}, @ToAccount = {toAccount}, @Amount = {amount}, @TransactionDescription = {desc}, @NewId = {newIdParam} OUTPUT";
@@ -88,6 +105,11 @@ namespace Assignment.Repositories.Implements.MSSql
             }
         }
 
+        /// <summary>
+        /// This method is to get all data from 
+        /// transaction table of database using LINQ.
+        /// </summary>
+        /// <returns>List of transaction object</returns>
         public List<Transaction> GetAllTransactions()
         {
             var result = _database.Transactions.ToList();

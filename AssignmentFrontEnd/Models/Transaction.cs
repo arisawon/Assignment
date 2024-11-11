@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace AssignmentFrontEnd.Models;
 
+/// <summary>
+/// This the model class for transaction data
+/// </summary>
 public partial class Transaction
 {
     public long TransactionId { get; set; }

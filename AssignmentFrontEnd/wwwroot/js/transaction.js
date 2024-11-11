@@ -1,11 +1,12 @@
-﻿
+﻿// This JS file is dedicated for the amount transfer process only.
 
 $(document).ready(function () {
     // Select elements with the class "message"
     var varifiedFromAccount = false;
     var varifiedToAccount = false;
 
-
+    //delearing the element ref 
+    //to be use in this file
     const btnText = $(".btn-text");
     const btnSubmit = $("#btnSubmit");
     const txtAmount = $("#txtAmount");
@@ -18,10 +19,12 @@ $(document).ready(function () {
     const lblFromAccountStatus = $("#lblFromAccountStatus");
     const frmValidationError = $('#frmValidationError');
 
-    frmValidationError.hide();
+    frmValidationError.hide();//Hiding the form level error msg
 
     btnText.text('Initiate Payment');
 
+    //Client side validation for the account 
+    //along with the validation account.
     if (varifiedToAccount) {
         lblToAccountStatus.css("color", "limegreen");
         lblToAccountStatus.text('Valid account');
@@ -41,6 +44,8 @@ $(document).ready(function () {
     }
 
 
+    //Updating the Button text 
+    //along with amount text
     $("#txtAmount").on("input", function () {
         let amt = $(this).val();
         if (amt != null && amt != '') {
@@ -51,6 +56,7 @@ $(document).ready(function () {
         
     });
 
+    //Validation process on lost focus
     txtFromAccount.blur(function () {
 
         if (ValidateFromDetails()) {
@@ -68,8 +74,6 @@ $(document).ready(function () {
         else
             SetStatus('From', false);
     });
-
-    
 
     txtToAccount.blur(function () {
 
@@ -89,6 +93,8 @@ $(document).ready(function () {
             SetStatus('To', false);
     });
 
+
+    //Form submit process
     $("#trans-form").submit(function (event) {
 
         event.preventDefault();
@@ -97,6 +103,8 @@ $(document).ready(function () {
             SubmitTransaction();
     });
 
+
+    //this the account varification AJAX method
     function VarifyAccount(accountName, accountNo, accountType) {
 
         $.ajax({
@@ -115,6 +123,7 @@ $(document).ready(function () {
         });
     }
 
+    //This method is for the form level input validation
     function ValidateFromDetails() {
         const lettersOnlyRegex = /^[A-Za-z\s]+$/;
         const noRegex = /^\d{12}$/;
@@ -139,6 +148,8 @@ $(document).ready(function () {
         return isValid;
     }
 
+
+    //This method for validation the amount input
     function ValidateAmount() {
         const amountRegex = /^\d+(\.\d{1,2})?$/;
         let isValid = true;
@@ -159,6 +170,7 @@ $(document).ready(function () {
         return true;
 
     }
+
 
     function ValidateToDetails() {
 
@@ -185,6 +197,7 @@ $(document).ready(function () {
         return isValid;
     }
 
+    //Method for form validation
     function ValidateForm() {
 
         if (ValidateFromDetails() && ValidateToDetails() && ValidateAmount())
@@ -193,6 +206,8 @@ $(document).ready(function () {
             return false;
     }
 
+
+    //This the AJAX method for adding a new transaction
     function SubmitTransaction() {
 
         let amountPayable = 0; 
@@ -246,6 +261,8 @@ $(document).ready(function () {
         
     }
 
+    //This method is for setting the account validation 
+    //status for both the accounts.
     function SetStatus (accountType, response) {
         if (accountType == 'To') {
             if (response) {

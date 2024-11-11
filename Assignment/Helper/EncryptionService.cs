@@ -1,5 +1,10 @@
 ﻿namespace Assignment.Helper
 {
+
+    /// <summary>
+    /// This is the service class to consume 
+    /// the encryption functionalities
+    /// </summary>
     public class EncryptionService
     {
         private readonly string _encryptionKey;

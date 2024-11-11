@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Assignment.DBO.Tables;
 
+/// <summary>
+/// Class corrosponding to the Account table of the database.
+/// </summary>
 public partial class Account
 {
     public int AccountId { get; set; }

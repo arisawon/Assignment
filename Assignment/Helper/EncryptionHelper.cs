@@ -3,8 +3,20 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
+
+/// <summary>
+/// This helper class to implement all encryption logic 
+/// to make any sensitive field encrypt or decrypt 
+/// using AES and Base64.
+/// </summary>
 public static class EncryptionHelper
 {
+    /// <summary>
+    /// To encrypt a sensitive string with a key
+    /// </summary>
+    /// <param name="plainText"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public static string Encrypt(string plainText, string key)
     {
         using (var aes = Aes.Create())
@@ -26,6 +38,13 @@ public static class EncryptionHelper
         }
     }
 
+
+    /// <summary>
+    /// To decrypt a encrypted string with a key
+    /// </summary>
+    /// <param name="cipherText"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public static string Decrypt(string cipherText, string key)
     {
         var fullCipher = Convert.FromBase64String(cipherText);

@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Assignment.DBO;
 
+/// <summary>
+/// DB Context class to communicate with database.
+/// </summary>
 public partial class DbAa587cAssesmentContext : DbContext
 {
 
@@ -19,6 +22,7 @@ public partial class DbAa587cAssesmentContext : DbContext
         _configuration = configuration;
     }
 
+    //For the database tables
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<Transaction> Transactions { get; set; }

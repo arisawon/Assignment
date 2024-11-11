@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace AssignmentFrontEnd.Models;
 
+
+/// <summary>
+/// This is the model class for account
+/// </summary>
 public partial class Account
 {
     public int AccountId { get; set; }

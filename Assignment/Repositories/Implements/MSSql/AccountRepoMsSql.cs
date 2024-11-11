@@ -7,6 +7,13 @@ using System.Linq;
 
 namespace Assignment.Repositories.Implements.MSSql
 {
+    /// <summary>
+    /// This is the class in the data layer to do the 
+    /// database operations using LINQ and DBContext.
+    /// Tjis class in implemented from the interface 
+    /// named IAccountsRepo. This will be used in service 
+    /// class by dependency injection. 
+    /// </summary>
     public class AccountRepoMsSql : IAccountsRepo
     {
         private readonly DbAa587cAssesmentContext _database;
@@ -18,11 +25,17 @@ namespace Assignment.Repositories.Implements.MSSql
             _logger = logger;
         }
 
-        
+        /// <summary>
+        /// For add a new record in the accounts table in database 
+        /// by using Stored Procedure.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
         public bool AddAccounts(Account account)
         {
             try
             {
+                //Parameters for the Stored Procedure
                 var newIdParam = new SqlParameter
                 {
                     ParameterName = "@NewId",
@@ -55,6 +68,7 @@ namespace Assignment.Repositories.Implements.MSSql
                     Value = account.Balance
                 };
 
+                //Execution logic for the Store Procedure 
                 if (account !=null && !string.IsNullOrWhiteSpace(account.AccountNumber) && !string.IsNullOrWhiteSpace(account.AccountHolderName))
                 {
                     FormattableString sql = $"EXEC AccountsInsert @AccountNumber = {accNumber}, @AccountHolderName = {accName}, @Balance = {balance}, @NewId = {newIdParam} OUTPUT";
@@ -86,6 +100,14 @@ namespace Assignment.Repositories.Implements.MSSql
             }
         }
 
+
+        /// <summary>
+        /// This method is to get a particuler account data 
+        /// from database by using LINQ
+        /// </summary>
+        /// <param name="accountNumber"></param>
+        /// <param name="accountHolderName"></param>
+        /// <returns>The account object</returns>
         public Account GetAccount(string accountNumber, string accountHolderName)
         {
             if(!string.IsNullOrWhiteSpace(accountNumber) && !string.IsNullOrWhiteSpace(accountHolderName))
@@ -100,12 +122,25 @@ namespace Assignment.Repositories.Implements.MSSql
             
         }
 
+        /// <summary>
+        /// This method to get all data from accounts 
+        /// table in database by LINQ.
+        /// </summary>
+        /// <returns>List of account objects</returns>
         public List<Account> GetAllAccounts()
         {
             var allAccounts = _database.Accounts.ToList();
             return allAccounts;
         }
 
+
+        /// <summary>
+        /// This method for validating an account information 
+        /// from database using LINQ.
+        /// </summary>
+        /// <param name="accountNumber"></param>
+        /// <param name="accountHolderName"></param>
+        /// <returns>Bool as per test</returns>
         public bool IsValidAccount(string accountNumber, string accountHolderName)
         {
             var result  = _database.Accounts.Where(e => (e.AccountNumber.Equals(accountNumber) && (e.AccountHolderName.Equals(accountHolderName)))).SingleOrDefault();
